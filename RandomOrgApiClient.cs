@@ -328,22 +328,21 @@ namespace Demot.RandomOrgApi
         /// <param name="id">User defined number wich will be returned in the response.</param>
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
-        public Usage GetUsage(int id) {
+        public Response GetUsage(int id) {
             var parameters = JsonHelper.GetString(false,
                                            ParameterApiKey, apiKey);
 
             var response = sendRequest(MethodGetUsage, parameters, id);
-            return new Usage(response);
+            return new Response(response, RandomOrgDataType.Usage);
         }
         /// <summary>
         /// Returns information about the usage of the given API key.
         /// </summary>
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
-        public Usage GetUsage() {
+        public Response GetUsage() {
             return GetUsage(rand.Next());
         }
-
 
         JsonObject sendRequest(string method, string methodParams, int id) {
             var request = JsonHelper.GetString(false,

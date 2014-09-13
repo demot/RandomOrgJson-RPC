@@ -19,7 +19,9 @@ namespace Demot.RandomOrgApi
             [FieldOffset(0)]
             public Guid[] UUIDs;
             [FieldOffset(0)]
-            public int ErrorId;
+            public Usage Usage;
+            [FieldOffset(0)]
+            public int ErrorCode;
             [FieldOffset(4)]
             public string ErrorMessage;
         }
@@ -31,7 +33,7 @@ namespace Demot.RandomOrgApi
 
             var error = JsonHelper.GetJsonObject(jObject, "error");
             if(error != null) {
-                this.data.ErrorId = (int)error["code"];
+                this.data.ErrorCode = (int)error["code"];
                 this.data.ErrorMessage = error["message"] as string;
                 this.DataType = RandomOrgDataType.Error;
                 return;
@@ -44,11 +46,16 @@ namespace Demot.RandomOrgApi
                 this.DataType = RandomOrgDataType.Error;
                 return;
             }
-            this.BitsUsed = (int)jObject["bitsUsed"];
             this.BitsLeft = (int)jObject["bitsLeft"];
             this.RequestsLeft = (int)jObject["requestsLeft"];
 
+            if(dataType == RandomOrgDataType.Usage) {
+                this.data.Usage = new Usage(jObject);
+                return;
+            }
+
             this.AdvisoryDelay = (int)jObject["advisoryDelay"];
+            this.BitsUsed = (int)jObject["bitsUsed"];
 
             jObject = jObject["random"] as JsonObject;
             if(jObject == null) {
@@ -125,26 +132,35 @@ namespace Demot.RandomOrgApi
             else
                 throw new InvalidOperationException();
         }
+        public Usage GetUsage() {
+            if(DataType == RandomOrgDataType.Usage)
+                return data.Usage;
+            else
+                throw new InvalidOperationException();
+        }
 
-        public bool HasError(out int errorId, out string errorMessage) {
+        public bool HasError(out int errorCode, out string errorMessage) {
             if(DataType == RandomOrgDataType.Error) {
-                errorId = data.ErrorId;
+                errorCode = data.ErrorCode;
                 errorMessage = data.ErrorMessage;
                 return true;
             } else {
-                errorId = -1;
+                errorCode = -1;
                 errorMessage = null;
                 return false;
             }
         }
-        public bool HasError(out int errorId) {
+        public bool HasError(out int errorCode) {
             if(DataType == RandomOrgDataType.Error) {
-                errorId = data.ErrorId;
+                errorCode = data.ErrorCode;
                 return true;
             } else {
-                errorId = -1;
+                errorCode = -1;
                 return false;
             }
+        }
+        public bool HasError() {
+            return DataType == RandomOrgDataType.Error;
         }
 
         public int BitsUsed { get; private set; }
@@ -154,11 +170,7 @@ namespace Demot.RandomOrgApi
         public int AdvisoryDelay { get; private set; }
         public DateTime CompletionTime { get; private set; }
         public RandomOrgDataType DataType { get; private set; }
-        public bool HasError {
-            get {
-                return DataType == RandomOrgDataType.Error;
-            }
-        }
+
     }
 
     public enum RandomOrgDataType
@@ -169,6 +181,7 @@ namespace Demot.RandomOrgApi
         Gaussian,
         UUID,
         Blob,
+        Usage,
         Error
     }
 }
