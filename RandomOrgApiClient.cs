@@ -36,22 +36,7 @@ namespace Demot.RandomOrgApi
             // Parameters
             ParameterApiKey = "apiKey",
             ParameterCount = "n",
-            ParameterLength = "length",
-            ParameterCharacters = "characters",
             ParameterReplacement = "replacement",
-            ParameterJsonVersion = "jsonrpc",
-            ParameterMethod = "method",
-            ParameterParams = "params",
-            ParameterId = "id",
-            ParameterResult = "result",
-            ParameterMin = "min",
-            ParameterMax = "max",
-            ParameterDecimalPlaces = "decimalPlaces",
-            ParameterMean = "mean",
-            ParameterStandartDeviation = "standartDeviation",
-            ParameterSignificantDigits = "significantDigits",
-            ParameterSize = "size",
-            ParameterFormat = "format",
 
             ArgumentRangeException = "{0} must be within {1} and {2}",
             ProtocolException = "({0}) {1}",
@@ -86,7 +71,56 @@ namespace Demot.RandomOrgApi
             this.rand = new Random();
         }
 
+        /// <summary>
+        /// Generates true random strings.
+        /// </summary>
+        /// <param name="n">Number of strings to generate, must be within the [1, 1e4] range.</param>
+        /// <param name="length">Length of each generated string, must be within the [1, 20] range.</param>
+        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
+        ///                      random.org's. public key.</param>
+        /// <param name="characters">Characters to occur in the random strings, maximal length: 80 UTF-8 encoded
+        ///                          characters. If the value is null, the default value will be used</param>
+        /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
+        ///                           duplicates, otherwise the picked numbers are unique.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <exception cref="System.TimeoutException"></exception>
+        /// <exception cref="ProtocolViolationException"></exception>
+        public Response GenerateStrings(int n, int length, int id, bool signed, string characters = StringCharacters, bool replacement = DefaultReplacement) {
+            if(n < 1 || n > maxN)
+                throw new ArgumentOutOfRangeException(String.Format(ArgumentRangeException, "n", 1, maxN));
+            if(!String.IsNullOrEmpty(characters) && characters.Length > 80)
+                throw new ArgumentOutOfRangeException(String.Format(ArgumentRangeException, "characters length", 1, 80));
+            else
+                characters = StringCharacters;
 
+            var parameters = JsonHelper.GetString(false,
+                                           ParameterApiKey, apiKey,
+                                           ParameterCount, n,
+                                           "length", length,
+                                           "characters", characters,
+                                           ParameterReplacement, replacement);
+
+            var response = sendRequest(signed ? MethodSignedString : MethodString, parameters, id);
+            return createResponse(response, RandomOrgDataType.String);
+        }
+        /// <summary>
+        /// Generates true random strings.
+        /// </summary>
+        /// <param name="n">Number of strings to generate, must be within the [1, 1e4] range.</param>
+        /// <param name="length">Length of each generated string, must be within the [1, 20] range.</param>
+        /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
+        ///                      random.org's. public key.</param>
+        /// <param name="characters">Characters to occur in the random strings, maximal length: 80 UTF-8 encoded
+        ///                          characters. If the value is null, the default value will be used</param>
+        /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
+        ///                           duplicates, otherwise the picked numbers are unique.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <exception cref="System.TimeoutException"></exception>
+        /// <exception cref="ProtocolViolationException"></exception>
+        public Response GenerateStrings(int n, int length, bool signed, string characters = StringCharacters, bool replacement = DefaultReplacement) {
+            return GenerateStrings(n, length, rand.Next(), signed, characters, replacement);
+        }
         /// <summary>
         /// Generates true random strings.
         /// </summary>
@@ -101,22 +135,7 @@ namespace Demot.RandomOrgApi
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
         public Response GenerateStrings(int n, int length, int id, string characters = StringCharacters, bool replacement = DefaultReplacement) {
-            if(n < 1 || n > maxN)
-                throw new ArgumentOutOfRangeException(String.Format(ArgumentRangeException, "n", 1, maxN));
-            if(!String.IsNullOrEmpty(characters) && characters.Length > 80)
-                throw new ArgumentOutOfRangeException(String.Format(ArgumentRangeException, "characters length", 1, 80));
-            else
-                characters = StringCharacters;
-
-            var parameters = JsonHelper.GetString(false,
-                                           ParameterApiKey, apiKey,
-                                           ParameterCount, n,
-                                           ParameterLength, length,
-                                           ParameterCharacters, characters,
-                                           ParameterReplacement, replacement);
-
-            var response = sendRequest(MethodString, parameters, id);
-            return createResponse(response, RandomOrgDataType.String);
+            return GenerateStrings(n, length, id, false, characters, replacement);
         }
         /// <summary>
         /// Generates true random strings.
@@ -131,7 +150,7 @@ namespace Demot.RandomOrgApi
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
         public Response GenerateStrings(int n, int length, string characters = StringCharacters, bool replacement = DefaultReplacement) {
-            return GenerateStrings(n, length, rand.Next(), characters, replacement);
+            return GenerateStrings(n, length, rand.Next(), false, characters, replacement);
         }
 
         /// <summary>
@@ -155,8 +174,8 @@ namespace Demot.RandomOrgApi
             var parameters = JsonHelper.GetString(false,
                                            ParameterApiKey, apiKey,
                                            ParameterCount, n,
-                                           ParameterMin, min,
-                                           ParameterMax, max,
+                                           "min", min,
+                                           "max", max,
                                            ParameterReplacement, replacement);
 
             var response = sendRequest(MethodInteger, parameters, id);
@@ -197,7 +216,7 @@ namespace Demot.RandomOrgApi
             var parameters = JsonHelper.GetString(false,
                                            ParameterApiKey, apiKey,
                                            ParameterCount, n,
-                                           ParameterDecimalPlaces, decimalPlaces,
+                                           "decimalPlaces", decimalPlaces,
                                            ParameterReplacement, replacement);
 
             var response = sendRequest(MethodDecimalFraction, parameters, id);
@@ -241,9 +260,9 @@ namespace Demot.RandomOrgApi
             var parameters = JsonHelper.GetString(false,
                                            ParameterApiKey, apiKey,
                                            ParameterCount, n,
-                                           ParameterMean, mean,
-                                           ParameterStandartDeviation, standartDeviation,
-                                           ParameterSignificantDigits, significantDigits);
+                                           "mean", mean,
+                                           "standartDeviation", standartDeviation,
+                                           "significantDigits", significantDigits);
 
             var response = sendRequest(MethodGaussian, parameters, id);
             return createResponse(response, RandomOrgDataType.Gaussian);
@@ -282,7 +301,7 @@ namespace Demot.RandomOrgApi
         /// Generates Binary Large Objects (BLOBs) containing true random data.
         /// </summary>
         /// <param name="n">Number of blobs to generate, must be within the [1, 100] range.</param>
-        /// <param name="size">Size of each blob, must be within the [1, 2^20] range.</param>
+        /// <param name="size">Size of each blob, must be within the [1, 2^20] range and must be divisable by 8.</param>
         /// <param name="id">User defined number wich will be returned in the response.</param>
         /// <param name="format">Format to display the blobs, values allow are "base64" and "hex".</param>
         /// <exception cref="System.ArgumentException"></exception>
@@ -302,8 +321,8 @@ namespace Demot.RandomOrgApi
             var parameters = JsonHelper.GetString(false,
                                            ParameterApiKey, apiKey,
                                            ParameterCount, n,
-                                           ParameterSize, size,
-                                           ParameterFormat, format);
+                                           "size", size,
+                                           "format", format);
 
             var response = sendRequest(MethodBlob, parameters, id);
             return createResponse(response, RandomOrgDataType.Blob);
@@ -333,7 +352,7 @@ namespace Demot.RandomOrgApi
                                            ParameterApiKey, apiKey);
 
             var response = sendRequest(MethodGetUsage, parameters, id);
-            return new Response(response, RandomOrgDataType.Usage);
+            return createResponse(response, RandomOrgDataType.Usage);
         }
         /// <summary>
         /// Returns information about the usage of the given API key.
@@ -344,12 +363,25 @@ namespace Demot.RandomOrgApi
             return GetUsage(rand.Next());
         }
 
+        public bool VerifySignature(JsonObject randomObject, string signature) {
+            // randomObject may contain bitsUsed, bitsLeft, ... which shouldn't be part of the request
+            removeUsageData(randomObject);
+            var parameters = JsonHelper.GetString(false,
+                                           "random", JsonHelper.GetString(false, randomObject),
+                                           "signature", signature);
+
+            var response = sendRequest(MethodVerifySignature, parameters, rand.Next());
+
+            return extractVerification(response);
+        }
+
+
         JsonObject sendRequest(string method, string methodParams, int id) {
             var request = JsonHelper.GetString(false,
-                                        ParameterJsonVersion, "2.0",
-                                        ParameterMethod, method,
-                                        ParameterParams, methodParams,
-                                        ParameterId, id);
+                                        "jsonrpc", "2.0",
+                                        "method", method,
+                                        "params", methodParams,
+                                        "id", id);
 
             // Handles the blocking time
             long waitingTime = advisoryDelay - (DateTime.Now.Ticks - lastresponseRevieved);
@@ -360,11 +392,7 @@ namespace Demot.RandomOrgApi
                     Thread.Sleep(TimeSpan.FromTicks(waitingTime));
             }
 
-            var response = post(request);
-            if(ThrowProtocolErrors)
-                checkErrors(response);
-
-            return response;
+            return post(request);
         }
         JsonObject post(string request) {
             JsonObject result;
@@ -379,28 +407,49 @@ namespace Demot.RandomOrgApi
                 using(var response = httpRequest.GetResponse())
                     using(var reader = new StreamReader(response.GetResponseStream()))
                         result = JsonHelper.GetJsonObject(reader.ReadToEnd());
-                
+
             } catch(Exception e) {
                 throw e;
+            } finally {
+                lastresponseRevieved = DateTime.Now.Ticks;
             }
 
             return result;
         }
-        void checkErrors(JsonObject response) {
-            var error = JsonHelper.GetJsonObject(response, "error");
-            if(error != null)
-                throw new ProtocolViolationException(String.Format(ProtocolException, error["code"], error["message"]));
-        }
         Response createResponse(JsonObject rawResponse, RandomOrgDataType dataType) {
-            var result = new Response(rawResponse, dataType);
-            Exception ex = new Exception();
+            // check for errors
+            var error = JsonHelper.GetJsonObject(rawResponse, "error");
+            if(error != null) {
+                if(ThrowProtocolErrors)
+                    throw new ProtocolViolationException(String.Format(ProtocolException, error["code"], error["message"]));
+                else
+                    return new Response((int)error["code"], error["message"] as string);
+            }
             
+            var result = new Response(rawResponse, dataType);
             advisoryDelay = result.AdvisoryDelay * TimeSpan.TicksPerMillisecond;
-            lastresponseRevieved = DateTime.Now.Ticks;
-
+            
             return result;
         }
 
+        bool extractVerification(JsonObject rawResponse) {
+            var result = JsonHelper.GetJsonObject(rawResponse, "result");
+            
+            if(result != null) {
+                object authenticity;
+                if(result.TryGetValue("authenticity", out authenticity)) {
+                    if(authenticity is bool)
+                        return (bool)authenticity;
+                }
+            }
+            return false;
+        }
+        void removeUsageData(JsonObject rawResult) {
+            rawResult.Remove("bitsUsed");
+            rawResult.Remove("bitsLeft");
+            rawResult.Remove("requestsLeft");
+            rawResult.Remove("advisoryDelay");
+        }
         /// <summary>
         /// Maximal time this class is blocking the thread while waiting for the server to accept new requests.
         /// </summary>

@@ -23,7 +23,7 @@ namespace Demot.RandomOrgApi
                      Seperators = ",}]";
 
         public static string GetString(bool isArray, params object[] entries) {
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
             bool readKey = true;
 
             if(isArray)
@@ -84,6 +84,18 @@ namespace Demot.RandomOrgApi
             result[result.Length - 1] = isArray ? CloseArray : CloseSection;
 
             return result.ToString();
+        }
+
+        public static string GetString(bool isArray, JsonObject obj) {
+            var objArr = new object[obj.Count * 2];
+
+            for(int i = 0; i < objArr.Length; i++) {
+                var element = obj.ElementAt(i);
+                objArr[i++] = element.Key;
+                objArr[i] = element.Value;
+            }
+
+            return GetString(isArray, objArr);
         }
 
         public static JsonObject GetJsonObject(JsonObject obj, string path) {

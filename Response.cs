@@ -20,24 +20,24 @@ namespace Demot.RandomOrgApi
             public Guid[] UUIDs;
             [FieldOffset(0)]
             public Usage Usage;
-            [FieldOffset(0)]
-            public int ErrorCode;
+            [FieldOffset(4)]
+            public JsonObject Result;
             [FieldOffset(4)]
             public string ErrorMessage;
+            [FieldOffset(8)]
+            public int ErrorCode;
         }
 
         ResponseData data;
 
+        internal Response(int errorCode, string errorMessage) {
+            this.data.ErrorCode = errorCode;
+            this.data.ErrorMessage = errorMessage;
+            this.DataType = RandomOrgDataType.Error;
+        }
+
         internal Response(JsonObject jObject, RandomOrgDataType dataType) {
             this.Id = (int)jObject["id"];
-
-            var error = JsonHelper.GetJsonObject(jObject, "error");
-            if(error != null) {
-                this.data.ErrorCode = (int)error["code"];
-                this.data.ErrorMessage = error["message"] as string;
-                this.DataType = RandomOrgDataType.Error;
-                return;
-            }
 
             this.DataType = dataType;
 
@@ -56,6 +56,7 @@ namespace Demot.RandomOrgApi
 
             this.AdvisoryDelay = (int)jObject["advisoryDelay"];
             this.BitsUsed = (int)jObject["bitsUsed"];
+            this.data.Result = jObject;
 
             jObject = jObject["random"] as JsonObject;
             if(jObject == null) {
@@ -135,6 +136,12 @@ namespace Demot.RandomOrgApi
         public Usage GetUsage() {
             if(DataType == RandomOrgDataType.Usage)
                 return data.Usage;
+            else
+                throw new InvalidOperationException();
+        }
+        public JsonObject GetRawResult() {
+            if(DataType != RandomOrgDataType.Error && DataType != RandomOrgDataType.Usage)
+                return data.Result;
             else
                 throw new InvalidOperationException();
         }
