@@ -6,7 +6,7 @@ A(nother) Random.org JSON-RPC API C# implementation
 Features
 --------
 
-* Full implementation of the basic Random.org JSON-RPC API methods, including:
+* Full implementation of the Random.org JSON-RPC API methods, including:
     * generateIntegers
     * generateStrings
     * generateDecimalFractions
@@ -14,6 +14,14 @@ Features
     * generateUUIDs
     * generateBlobs
     * getUsage
+	
+	* generateSignedIntegers
+    * generateSignedStrings
+    * generateSignedDecimalFractions
+    * generateSignedGaussians
+    * generateSignedUUIDs
+    * generateSignedBlobs
+	* verifySignature
 
 * Optional parameters
 * No dependencies
