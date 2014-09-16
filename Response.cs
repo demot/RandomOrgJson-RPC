@@ -67,17 +67,23 @@ namespace Demot.RandomOrgApi
 
             switch(dataType) {
             case RandomOrgDataType.Integer:
+            case RandomOrgDataType.SignedInteger:
                 this.data.Integers = extractData<int>(jObject);
                 break;
             case RandomOrgDataType.String:
+            case RandomOrgDataType.SignedString:
             case RandomOrgDataType.Blob:
+            case RandomOrgDataType.SignedBlob:
                 this.data.Strings = extractData<string>(jObject);
                 break;
             case RandomOrgDataType.Decimal:
+            case RandomOrgDataType.SignedDecimal:
             case RandomOrgDataType.Gaussian:
+            case RandomOrgDataType.SignedGaussian:
                 this.data.Doubles = extractData<double>(jObject);
                 break;
             case RandomOrgDataType.UUID:
+            case RandomOrgDataType.SignedUUID:
                 string[] rawUUIDs = extractData<string>(jObject);
                 Guid[] uuids = new Guid[rawUUIDs.Length];
                 for(int i = 0; i < uuids.Length; i++)
@@ -97,54 +103,92 @@ namespace Demot.RandomOrgApi
             return result;
         }
 
-        public int[] GetIntegers() {
-            if(DataType == RandomOrgDataType.Integer)
-                return data.Integers;
-            else
-                throw new InvalidOperationException();
+        public int[] Integers {
+            get {
+                if(DataType == RandomOrgDataType.Integer || DataType == RandomOrgDataType.SignedInteger)
+                    return data.Integers;
+                else
+                    throw new InvalidOperationException();
+            }
         }
-        public string[] GetStrings() {
-            if(DataType == RandomOrgDataType.String)
-                return data.Strings;
-            else
-                throw new InvalidOperationException();
+        public string[] Strings {
+            get {
+                if(DataType == RandomOrgDataType.String || DataType == RandomOrgDataType.SignedString)
+                    return data.Strings;
+                else
+                    throw new InvalidOperationException();
+            }
         }
-        public string[] GetBlobs() {
-            if(DataType == RandomOrgDataType.Blob)
-                return data.Strings;
-            else
-                throw new InvalidOperationException();
+        public string[] Blobs {
+            get {
+                if(DataType == RandomOrgDataType.Blob || DataType == RandomOrgDataType.SignedBlob)
+                    return data.Strings;
+                else
+                    throw new InvalidOperationException();
+            }
         }
-        public double[] GetDoubles() {
-            if(DataType == RandomOrgDataType.Decimal)
-                return data.Doubles;
-            else
-                throw new InvalidOperationException();
+        public double[] Decimals {
+            get {
+                if(DataType == RandomOrgDataType.Decimal || DataType == RandomOrgDataType.SignedDecimal)
+                    return data.Doubles;
+                else
+                    throw new InvalidOperationException();
+            }
         }
-        public double[] GetGaussians() {
-            if(DataType == RandomOrgDataType.Gaussian)
-                return data.Doubles;
-            else
-                throw new InvalidOperationException();
+        public double[] Gaussians {
+            get {
+                if(DataType == RandomOrgDataType.Gaussian || DataType == RandomOrgDataType.SignedGaussian)
+                    return data.Doubles;
+                else
+                    throw new InvalidOperationException();
+            }
         }
-        public Guid[] GetUUIDs() {
-            if(DataType == RandomOrgDataType.UUID)
-                return data.UUIDs;
-            else
-                throw new InvalidOperationException();
+        public Guid[] UUIDs {
+            get {
+                if(DataType == RandomOrgDataType.UUID || DataType == RandomOrgDataType.SignedUUID)
+                    return data.UUIDs;
+                else
+                    throw new InvalidOperationException();
+            }
         }
-        public Usage GetUsage() {
-            if(DataType == RandomOrgDataType.Usage)
-                return data.Usage;
-            else
-                throw new InvalidOperationException();
+        public Usage Usage {
+            get {
+                if(DataType == RandomOrgDataType.Usage)
+                    return data.Usage;
+                else
+                    throw new InvalidOperationException();
+            }
         }
-        public JsonObject GetRawResult() {
-            if(DataType != RandomOrgDataType.Error && DataType != RandomOrgDataType.Usage)
-                return data.Result;
-            else
-                throw new InvalidOperationException();
+        public JsonObject RawResult {
+            get {
+                if(DataType != RandomOrgDataType.Error && DataType != RandomOrgDataType.Usage)
+                    return data.Result;
+                else
+                    throw new InvalidOperationException();
+            }
         }
+        public string Signature {
+            get {
+                if(IsSigned)
+                    return data.Result["signature"] as string;
+                else
+                    throw new InvalidOperationException();
+            }
+        }
+
+        public bool IsSigned {
+            get {
+                return (int)DataType % 2 == 1;
+            }
+        }
+
+        public int BitsUsed { get; private set; }
+        public int BitsLeft { get; private set; }
+        public int RequestsLeft { get; private set; }
+        public int Id { get; private set; }
+        public int AdvisoryDelay { get; private set; }
+        public DateTime CompletionTime { get; private set; }
+        public RandomOrgDataType DataType { get; private set; }
 
         public bool HasError(out int errorCode, out string errorMessage) {
             if(DataType == RandomOrgDataType.Error) {
@@ -169,26 +213,24 @@ namespace Demot.RandomOrgApi
         public bool HasError() {
             return DataType == RandomOrgDataType.Error;
         }
-
-        public int BitsUsed { get; private set; }
-        public int BitsLeft { get; private set; }
-        public int RequestsLeft { get; private set; }
-        public int Id { get; private set; }
-        public int AdvisoryDelay { get; private set; }
-        public DateTime CompletionTime { get; private set; }
-        public RandomOrgDataType DataType { get; private set; }
-
     }
 
     public enum RandomOrgDataType
     {
-        Integer,
+        // asign signed types to odd numbers 
+        Integer = 0,
+        SignedInteger,
         String,
+        SignedString,
         Decimal,
+        SignedDecimal,
         Gaussian,
+        SignedGaussian,
         UUID,
+        SignedUUID,
         Blob,
-        Usage,
-        Error
+        SignedBlob,
+        Usage = 12,
+        Error = 14
     }
 }

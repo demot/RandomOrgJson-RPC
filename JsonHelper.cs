@@ -62,9 +62,13 @@ namespace Demot.RandomOrgApi
                             result.Append(True);
                         else
                             result.Append(False);
-                    } else if(current is ICollection) {
+                    } else if(current is JsonObject)
+                        // should be placed before funktion checks for ICollection
+                        result.Append(GetString(false, current as JsonObject));
+                    else if(current is ICollection) {
                         var array = current as ICollection;
                         var arrayEntries = new object[array.Count];
+                        
                         int j = 0;
                         foreach(var element in array)
                             arrayEntries[j++] = element;
@@ -89,10 +93,10 @@ namespace Demot.RandomOrgApi
         public static string GetString(bool isArray, JsonObject obj) {
             var objArr = new object[obj.Count * 2];
 
-            for(int i = 0; i < objArr.Length; i++) {
+            for(int i = 0; i < obj.Count; i++) {
                 var element = obj.ElementAt(i);
-                objArr[i++] = element.Key;
-                objArr[i] = element.Value;
+                objArr[i * 2] = element.Key;
+                objArr[i * 2 + 1] = element.Value;
             }
 
             return GetString(isArray, objArr);

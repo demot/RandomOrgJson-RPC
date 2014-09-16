@@ -366,12 +366,8 @@ namespace Demot.RandomOrgApi
         public bool VerifySignature(JsonObject randomObject, string signature) {
             // randomObject may contain bitsUsed, bitsLeft, ... which shouldn't be part of the request
             removeUsageData(randomObject);
-            var parameters = JsonHelper.GetString(false,
-                                           "random", JsonHelper.GetString(false, randomObject),
-                                           "signature", signature);
 
-            var response = sendRequest(MethodVerifySignature, parameters, rand.Next());
-
+            var response = sendRequest(MethodVerifySignature, JsonHelper.GetString(false, randomObject), rand.Next());
             return extractVerification(response);
         }
 
@@ -434,7 +430,7 @@ namespace Demot.RandomOrgApi
 
         bool extractVerification(JsonObject rawResponse) {
             var result = JsonHelper.GetJsonObject(rawResponse, "result");
-            
+
             if(result != null) {
                 object authenticity;
                 if(result.TryGetValue("authenticity", out authenticity)) {
