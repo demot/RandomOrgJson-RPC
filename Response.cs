@@ -5,6 +5,9 @@ using JsonObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace Demot.RandomOrgApi
 {
+    /// <summary>
+    /// Represents a response from a request to the random.org Api.
+    /// </summary>
     public class Response
     {
         [StructLayout(LayoutKind.Explicit)]
@@ -20,10 +23,10 @@ namespace Demot.RandomOrgApi
             public Guid[] UUIDs;
             [FieldOffset(0)]
             public Usage Usage;
+            [FieldOffset(0)]
+            public string ErrorMessage;
             [FieldOffset(4)]
             public JsonObject Result;
-            [FieldOffset(4)]
-            public string ErrorMessage;
             [FieldOffset(8)]
             public int ErrorCode;
         }
@@ -48,6 +51,7 @@ namespace Demot.RandomOrgApi
             }
             this.BitsLeft = (int)jObject["bitsLeft"];
             this.RequestsLeft = (int)jObject["requestsLeft"];
+            this.data.Result = jObject;
 
             if(dataType == RandomOrgDataType.Usage) {
                 this.data.Usage = new Usage(jObject);
@@ -56,7 +60,6 @@ namespace Demot.RandomOrgApi
 
             this.AdvisoryDelay = (int)jObject["advisoryDelay"];
             this.BitsUsed = (int)jObject["bitsUsed"];
-            this.data.Result = jObject;
 
             jObject = jObject["random"] as JsonObject;
             if(jObject == null) {
@@ -103,6 +106,10 @@ namespace Demot.RandomOrgApi
             return result;
         }
 
+        /// <summary>
+        /// Gets the generated integers.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public int[] Integers {
             get {
                 if(DataType == RandomOrgDataType.Integer || DataType == RandomOrgDataType.SignedInteger)
@@ -111,6 +118,10 @@ namespace Demot.RandomOrgApi
                     throw new InvalidOperationException();
             }
         }
+        /// <summary>
+        /// Gets the generated strings.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public string[] Strings {
             get {
                 if(DataType == RandomOrgDataType.String || DataType == RandomOrgDataType.SignedString)
@@ -119,6 +130,10 @@ namespace Demot.RandomOrgApi
                     throw new InvalidOperationException();
             }
         }
+        /// <summary>
+        /// Gets the generated Binary Large OBjects (BLOBs).
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public string[] Blobs {
             get {
                 if(DataType == RandomOrgDataType.Blob || DataType == RandomOrgDataType.SignedBlob)
@@ -127,6 +142,10 @@ namespace Demot.RandomOrgApi
                     throw new InvalidOperationException();
             }
         }
+        /// <summary>
+        /// Gets the generated decimal fractions.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public double[] Decimals {
             get {
                 if(DataType == RandomOrgDataType.Decimal || DataType == RandomOrgDataType.SignedDecimal)
@@ -135,6 +154,10 @@ namespace Demot.RandomOrgApi
                     throw new InvalidOperationException();
             }
         }
+        /// <summary>
+        /// Gets the generated gaussians.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public double[] Gaussians {
             get {
                 if(DataType == RandomOrgDataType.Gaussian || DataType == RandomOrgDataType.SignedGaussian)
@@ -143,6 +166,10 @@ namespace Demot.RandomOrgApi
                     throw new InvalidOperationException();
             }
         }
+        /// <summary>
+        /// Gets the generated Universally Unique IDentifiers (UUIDs)s
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public Guid[] UUIDs {
             get {
                 if(DataType == RandomOrgDataType.UUID || DataType == RandomOrgDataType.SignedUUID)
@@ -151,6 +178,10 @@ namespace Demot.RandomOrgApi
                     throw new InvalidOperationException();
             }
         }
+        /// <summary>
+        /// Gets the usage.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public Usage Usage {
             get {
                 if(DataType == RandomOrgDataType.Usage)
@@ -159,14 +190,23 @@ namespace Demot.RandomOrgApi
                     throw new InvalidOperationException();
             }
         }
-        public JsonObject RawResult {
+        /// <summary>
+        /// Contains a representation of the random object.
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
+        public JsonObject RandomObject {
             get {
-                if(DataType != RandomOrgDataType.Error && DataType != RandomOrgDataType.Usage)
+                if(DataType != RandomOrgDataType.Error)
                     return data.Result;
                 else
                     throw new InvalidOperationException();
             }
         }
+        /// <summary>
+        /// Contains a base64-encoded signature of the response signed with random.org's public key.
+        /// (Only if the signed flag in the request was true)
+        /// </summary>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public string Signature {
             get {
                 if(IsSigned)
@@ -176,20 +216,50 @@ namespace Demot.RandomOrgApi
             }
         }
 
+        /// <summary>
+        /// Gets if the response is signed.
+        /// </summary>
         public bool IsSigned {
             get {
                 return (int)DataType % 2 == 1;
             }
         }
 
+        /// <summary>
+        /// Contains the number of true random bits used by this request.
+        /// </summary>
         public int BitsUsed { get; private set; }
+        /// <summary>
+        /// Contains the number of bits available to the client.
+        /// </summary>
         public int BitsLeft { get; private set; }
+        /// <summary>
+        /// Contains the number of requests left.
+        /// </summary>
         public int RequestsLeft { get; private set; }
+        /// <summary>
+        /// The id, which was also included in the request.
+        /// </summary>
         public int Id { get; private set; }
+        /// <summary>
+        /// Contains the recommended number of milliseconds that the client should delay before
+        /// the next request.
+        /// </summary>
         public int AdvisoryDelay { get; private set; }
+        /// <summary>
+        /// The timestamp at which the request was completed.
+        /// </summary>
         public DateTime CompletionTime { get; private set; }
+        /// <summary>
+        /// Contains the type of data of this response.
+        /// </summary>
         public RandomOrgDataType DataType { get; private set; }
 
+        /// <summary>
+        /// Returns true if the response from random.org contains an error.
+        /// </summary>
+        /// <param name="errorCode">Numberic representation of the error.</param>
+        /// <param name="errorMessage">Error message explaining the error.</param>
         public bool HasError(out int errorCode, out string errorMessage) {
             if(DataType == RandomOrgDataType.Error) {
                 errorCode = data.ErrorCode;
@@ -201,6 +271,10 @@ namespace Demot.RandomOrgApi
                 return false;
             }
         }
+        /// <summary>
+        /// Returns true if the response from random.org contains an error.
+        /// </summary>
+        /// <param name="errorCode">Numberic representation of the error.</param>
         public bool HasError(out int errorCode) {
             if(DataType == RandomOrgDataType.Error) {
                 errorCode = data.ErrorCode;
@@ -210,6 +284,9 @@ namespace Demot.RandomOrgApi
                 return false;
             }
         }
+        /// <summary>
+        /// Returns true if the response from random.org contains an error.
+        /// </summary>
         public bool HasError() {
             return DataType == RandomOrgDataType.Error;
         }

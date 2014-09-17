@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Security.Cryptography;
 using JsonObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace Demot.RandomOrgApi
@@ -17,7 +18,7 @@ namespace Demot.RandomOrgApi
             BaseUrl = "https://api.random.org/json-rpc/1/invoke",
             ContentType = "application/json",
             
-            // basic API methods
+            // Basic API methods
             MethodInteger = "generateIntegers",
             MethodDecimalFraction = "generateDecimalFractions",
             MethodGaussian = "generateGaussians",
@@ -55,7 +56,8 @@ namespace Demot.RandomOrgApi
              lastresponseRevieved,
              advisoryDelay;
         Random rand;
-        string apiKey;
+        string apiKey,
+               hashedKey;
 
         /// <summary>
         /// Intializes a new instance of the RandomOrgApiClient.
@@ -616,6 +618,16 @@ namespace Demot.RandomOrgApi
             rawResult.Remove("requestsLeft");
             rawResult.Remove("advisoryDelay");
         }
+
+        static string createSHA512Hash(string value) {
+            string result;
+
+            using(var sha512 = SHA512Managed.Create())
+                result = Convert.ToBase64String(sha512.ComputeHash(Encoding.UTF8.GetBytes(value)));
+            
+            return result;
+        }
+
         /// <summary>
         /// Maximal time this class is blocking the thread while waiting for the server to accept new requests.
         /// </summary>
@@ -631,7 +643,19 @@ namespace Demot.RandomOrgApi
                 maxBlockingTime = TimeSpan.TicksPerMillisecond * value;
             }
         }
-
+        /// <summary>
+        /// Gets or sets if protocol violation exceptions should be thrown.
+        /// </summary>
         public bool ThrowProtocolErrors { get; set; }
+        /// <summary>
+        /// Gets a string containing a base64-encoded SHA-512 hash of the Api key.
+        /// </summary>
+        public string HashedApiKey {
+            get {
+                if(String.IsNullOrEmpty(hashedKey))
+                    hashedKey = createSHA512Hash(apiKey);
+                return hashedKey;
+            }
+        }
     }
 }
