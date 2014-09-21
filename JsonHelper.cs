@@ -58,10 +58,7 @@ namespace Demot.RandomOrgApi
                               current is decimal) {
                         result.Append(current);
                     } else if(current is bool || current is bool?) {
-                        if((bool)(current) == true)
-                            result.Append(True);
-                        else
-                            result.Append(False);
+                        result.Append((bool)current ? True : False);
                     } else if(current is JsonObject)
                         // should be placed before funktion checks for ICollection
                         result.Append(GetString(false, current as JsonObject));
@@ -104,16 +101,16 @@ namespace Demot.RandomOrgApi
 
         public static JsonObject GetJsonObject(JsonObject obj, string path) {
             JsonObject current = obj;
-            int pI = 0;
-            string pathSection;
-            while((pathSection = getPathSection(path, pI++)) != null) {
+            var pathSections = path.Split('.');
+            for(int i = 0; i < pathSections.Length; i++) {
                 object value;
-                if(current.TryGetValue(pathSection, out value))
+                if(current.TryGetValue(pathSections[i], out value)) {
                     if(value is JsonObject) {
                         current = value as JsonObject;
                         continue;
                     }
-                return null;
+                    return null;
+                }
             }
             return current;
         }
@@ -270,24 +267,6 @@ namespace Demot.RandomOrgApi
                     return dResult;
             } else
                 throw new FormatException("Expected number");
-        }
-
-        static string getPathSection(string path, int section) {
-            int left = 0,
-                right = -1;
-
-            for(; section > -1; section--) {
-                left = right + 1;
-                right = path.IndexOf('.', left);
-                if(right < 0) {
-                    right = path.Length;
-                    if(section > 0)
-                        return null;
-                    break;
-                }
-            }
-
-            return path.Substring(left, right - left);
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Security.Cryptography;
 using JsonObject = System.Collections.Generic.Dictionary<string, object>;
 
 namespace Demot.RandomOrgApi
@@ -78,9 +78,9 @@ namespace Demot.RandomOrgApi
         /// </summary>
         /// <param name="n">Number of strings to generate, must be within the [1, 1e4] range.</param>
         /// <param name="length">Length of each generated string, must be within the [1, 20] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <param name="characters">Characters to occur in the random strings, maximal length: 80 UTF-8 encoded
         ///                          characters. If the value is null, the default value will be used</param>
         /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
@@ -112,7 +112,7 @@ namespace Demot.RandomOrgApi
         /// <param name="n">Number of strings to generate, must be within the [1, 1e4] range.</param>
         /// <param name="length">Length of each generated string, must be within the [1, 20] range.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <param name="characters">Characters to occur in the random strings, maximal length: 80 UTF-8 encoded
         ///                          characters. If the value is null, the default value will be used</param>
         /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
@@ -128,7 +128,7 @@ namespace Demot.RandomOrgApi
         /// </summary>
         /// <param name="n">Number of strings to generate, must be within the [1, 1e4] range.</param>
         /// <param name="length">Length of each generated string, must be within the [1, 20] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="characters">Characters to occur in the random strings, maximal length: 80 UTF-8 encoded
         ///                          characters. If the value is null, the default value will be used</param>
         /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
@@ -161,9 +161,9 @@ namespace Demot.RandomOrgApi
         /// <param name="n">Number of integers to generate, must be within the [1, 1e4] range.</param>
         /// <param name="min">Lower boundary for the range, must be within the [-1e9, 1e9] range.</param>
         /// <param name="max">Upper boundary for the range, must be within the [-1e9, 1e9] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
         ///                           duplicates, otherwise the picked numbers are unique.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
@@ -192,7 +192,7 @@ namespace Demot.RandomOrgApi
         /// <param name="min">Lower boundary for the range, must be within the [-1e9, 1e9] range.</param>
         /// <param name="max">Upper boundary for the range, must be within the [-1e9, 1e9] range.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
         ///                           duplicates, otherwise the picked numbers are unique.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
@@ -207,7 +207,7 @@ namespace Demot.RandomOrgApi
         /// <param name="n">Number of integers to generate, must be within the [1, 1e4] range.</param>
         /// <param name="min">Lower boundary for the range, must be within the [-1e9, 1e9] range.</param>
         /// <param name="max">Upper boundary for the range, must be within the [-1e9, 1e9] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
         ///                           duplicates, otherwise the picked numbers are unique.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
@@ -236,9 +236,9 @@ namespace Demot.RandomOrgApi
         /// </summary>
         /// <param name="n">Number of decimal fractions to generate, must be within the [1, 1e4] range.</param>
         /// <param name="decimalPlaces">Number of decimal places to use, must be within the [1, 20] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
         ///                           duplicates, otherwise the picked numbers are unique.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
@@ -265,7 +265,7 @@ namespace Demot.RandomOrgApi
         /// <param name="n">Number of decimal fractions to generate, must be within the [1, 1e4] range.</param>
         /// <param name="decimalPlaces">Number of decimal places to use, must be within the [1, 20] range.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
         ///                           duplicates, otherwise the picked numbers are unique.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
@@ -279,7 +279,7 @@ namespace Demot.RandomOrgApi
         /// </summary>
         /// <param name="n">Number of decimal fractions to generate, must be within the [1, 1e4] range.</param>
         /// <param name="decimalPlaces">Number of decimal places to use, must be within the [1, 20] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="replacement">Specifies if numbers should be picked with replacement. If true, the generated numbers may contain
         ///                           duplicates, otherwise the picked numbers are unique.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
@@ -309,9 +309,9 @@ namespace Demot.RandomOrgApi
         /// <param name="mean">Distribution's mean, must be within the [-1e6, 1e6] range.</param>
         /// <param name="standardDeviation">Distribution's standard deviation, must be within the [-1e6, 1e6] range.</param>
         /// <param name="significantDigits">Number of significant digits to use, must be within the [2, 20] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
@@ -343,7 +343,7 @@ namespace Demot.RandomOrgApi
         /// <param name="standardDeviation">Distribution's standard deviation, must be within the [-1e6, 1e6] range.</param>
         /// <param name="significantDigits">Number of significant digits to use, must be within the [2, 20] range.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
@@ -357,7 +357,7 @@ namespace Demot.RandomOrgApi
         /// <param name="mean">Distribution's mean, must be within the [-1e6, 1e6] range.</param>
         /// <param name="standardDeviation">Distribution's standard deviation, must be within the [-1e6, 1e6] range.</param>
         /// <param name="significantDigits">Number of significant digits to use, must be within the [2, 20] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
@@ -382,9 +382,9 @@ namespace Demot.RandomOrgApi
         /// Generates true random Universally Unique IDentifiers (UUIDs) specified by RFC 4122.
         /// </summary>
         /// <param name="n">Number of UUIDs to generate, must be within the [1, 1e3] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
@@ -403,7 +403,7 @@ namespace Demot.RandomOrgApi
         /// </summary>
         /// <param name="n">Number of UUIDs to generate, must be within the [1, 1e3] range.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
@@ -414,7 +414,7 @@ namespace Demot.RandomOrgApi
         /// Generates true random Universally Unique IDentifiers (UUIDs) specified by RFC 4122.
         /// </summary>
         /// <param name="n">Number of UUIDs to generate, must be within the [1, 1e3] range.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
@@ -437,9 +437,9 @@ namespace Demot.RandomOrgApi
         /// </summary>
         /// <param name="n">Number of blobs to generate, must be within the [1, 100] range.</param>
         /// <param name="size">Size of each blob, must be within the [1, 2^20] range and must be divisable by 8.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <param name="format">Format to display the blobs, values allow are "base64" and "hex".</param>
         /// <exception cref="System.ArgumentException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
@@ -470,7 +470,7 @@ namespace Demot.RandomOrgApi
         /// <param name="n">Number of blobs to generate, must be within the [1, 100] range.</param>
         /// <param name="size">Size of each blob, must be within the [1, 2^20] range and must be divisable by 8.</param>
         /// <param name="signed">Specifies if the result should be signed with a SHA-512 key which you can use to verify it against
-        ///                      random.org's. public key.</param>
+        ///                      random.org's public key.</param>
         /// <param name="format">Format to display the blobs, values allow are "base64" and "hex".</param>
         /// <exception cref="System.ArgumentException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
@@ -484,7 +484,7 @@ namespace Demot.RandomOrgApi
         /// </summary>
         /// <param name="n">Number of blobs to generate, must be within the [1, 100] range.</param>
         /// <param name="size">Size of each blob, must be within the [1, 2^20] range and must be divisable by 8.</param>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <param name="format">Format to display the blobs, values allow are "base64" and "hex".</param>
         /// <exception cref="System.ArgumentException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
@@ -510,7 +510,7 @@ namespace Demot.RandomOrgApi
         /// <summary>
         /// Returns information about the usage of the given API key.
         /// </summary>
-        /// <param name="id">User defined number wich will be returned in the response.</param>
+        /// <param name="id">User defined number which will be returned in the response.</param>
         /// <exception cref="System.TimeoutException"></exception>
         /// <exception cref="ProtocolViolationException"></exception>
         public Response GetUsage(int id) {
