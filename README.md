@@ -1,7 +1,7 @@
 RandomOrgJson-RPC
 =================
 
-A(nother) Random.org JSON-RPC API C# implementation
+A(nother) unoffical Random.org JSON-RPC API C# implementation
 
 Features
 --------
@@ -14,7 +14,7 @@ Features
     * generateUUIDs
     * generateBlobs
     * getUsage
-	
+
 	* generateSignedIntegers
     * generateSignedStrings
     * generateSignedDecimalFractions
