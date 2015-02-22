@@ -14,14 +14,13 @@ Features
     * generateUUIDs
     * generateBlobs
     * getUsage
-
-	* generateSignedIntegers
+    * generateSignedIntegers
     * generateSignedStrings
     * generateSignedDecimalFractions
     * generateSignedGaussians
     * generateSignedUUIDs
     * generateSignedBlobs
-	* verifySignature
+    * verifySignature
 
 * Optional parameters
 * No dependencies
