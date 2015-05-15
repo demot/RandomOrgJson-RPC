@@ -100,11 +100,11 @@ namespace Demot.RandomOrgApi
         }
 
         public static JsonObject GetJsonObject(JsonObject obj, string path) {
-            JsonObject current = obj;
+            JsonObject current = null;
             var pathSections = path.Split('.');
             for(int i = 0; i < pathSections.Length; i++) {
                 object value;
-                if(current.TryGetValue(pathSections[i], out value)) {
+                if(obj.TryGetValue(pathSections[i], out value)) {
                     if(value is JsonObject) {
                         current = value as JsonObject;
                         continue;
