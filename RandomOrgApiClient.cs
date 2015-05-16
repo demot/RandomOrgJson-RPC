@@ -588,6 +588,7 @@ namespace Demot.RandomOrgApi
             // check for errors
             var error = JsonHelper.GetJsonObject(rawResponse, "error");
             if(error != null) {
+                advisoryDelay = 0;
                 if(ThrowProtocolErrors)
                     throw new ProtocolViolationException(String.Format(ProtocolException, error["code"], error["message"]));
                 else

@@ -104,13 +104,10 @@ namespace Demot.RandomOrgApi
             var pathSections = path.Split('.');
             for(int i = 0; i < pathSections.Length; i++) {
                 object value;
-                if(current.TryGetValue(pathSections[i], out value)) {
-                    if(value is JsonObject) {
-                        current = value as JsonObject;
-                        continue;
-                    }
+                if(current.TryGetValue(pathSections[i], out value) && value is JsonObject)
+                    current = value as JsonObject;
+                else
                     return null;
-                }
             }
             return current;
         }
