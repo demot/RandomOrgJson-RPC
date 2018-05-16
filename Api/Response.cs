@@ -51,6 +51,9 @@ namespace Demot.RandomOrgJsonRPC
 
             this.AdvisoryDelay = (int)jObject ["advisoryDelay"];
             this.BitsUsed = (int)jObject ["bitsUsed"];
+            if (this.IsSigned) {
+                this.signature = (string)jObject ["signature"];
+            }
 
             jObject = jObject ["random"] as JsonObject;
             if (jObject == null) {
@@ -171,6 +174,7 @@ namespace Demot.RandomOrgJsonRPC
                     throw new InvalidOperationException ();
             }
         }
+        private string signature;
         /// <summary>
         /// Contains a base64-encoded signature of the response signed with random.org's public key.
         /// (Only if the signed flag in the request was true)
@@ -179,7 +183,7 @@ namespace Demot.RandomOrgJsonRPC
         public string Signature {
             get {
                 if (IsSigned)
-                    return rpcObject ["signature"] as string;
+                    return signature;
                 else
                     throw new InvalidOperationException ();
             }
